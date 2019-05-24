@@ -81,7 +81,7 @@ class ChatThread extends Thread{
 		if(end != -1){
 			String to = msg.substring(start, end);
 			String msg2 = msg.substring(end+1);
-			Object obj = hm.get(to);
+			Object obj = hm.get(to); //해당하는 pw의 주솟값을 리턴
 			if(obj != null){
 				PrintWriter pw = (PrintWriter)obj;
 				pw.println(id + " whisphered. : " + msg2);
@@ -93,23 +93,34 @@ class ChatThread extends Thread{
 		synchronized(hm){
 			Collection collection = hm.values();
 			Iterator iter = collection.iterator();
+			Object obj = hm.get(id);
 			while(iter.hasNext()){
 				PrintWriter pw = (PrintWriter)iter.next();
-				pw.println(msg);
-				pw.flush();
+				
+				//최근 날라온 pw를 제외하고 msg를 보낸다 
+				if (pw != (PrintWriter)obj) {
+					pw.println(msg); //모든 pw한테 보낸다
+					pw.flush();
+				}
 			}
 		}
 	} // broadcast
-	public void send_userlist() {
-		Collection collection = hm.keys();
+	
+	//userlist 출력 method
+	public void send_userlist() { //내아이디에 해당되는게 뭔지.. 똑같이 한다(sendmsg와)
+		Collection collection = hm.keySet();
 		Iterator iter = collection.iterator();
 		int num = 0;
+		Object obj = hm.get(id); //내 아이디에 맞는 pw에 넣어주어야 한다.
 		
-		while(iter.hasNext()) {
-			PrintWriter pw = (PrintWriter)iter.next();
-			pw.println(iter.key());
-			pw.flush();
-			num += 1;
+		if (obj != null){
+			PrintWriter pw = (PrintWriter)obj;
+			while(iter.hasNext()) {
+				pw.println(iter.next()); 
+				pw.flush();
+				num += 1;
+			}
+			pw.println("Total number : " + num);
 		}
-	} //send_userlist
+	} 
 }
