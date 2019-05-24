@@ -1,4 +1,4 @@
-//https://github.com/lyw3447/SimpleCha
+//https://github.com/lyw3447/SimpleChat
 
 import java.net.*;
 import java.io.*;
