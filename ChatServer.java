@@ -14,7 +14,7 @@ public class ChatServer {
 				ChatThread chatthread = new ChatThread(sock, hm);
 				chatthread.start();
 			} // while
-		}catch(Exception e){
+		}catch(Exception e) {
 			System.out.println(e);
 		}
 	} // main
@@ -44,21 +44,29 @@ class ChatThread extends Thread{
 		}
 	} // construcor
 	public void run(){
+		
 		try{
 			String line = null;
+			
 			while((line = br.readLine()) != null){
+				boolean flag = true;
 				if(line.equals("/quit"))
 					break;
 				if(line.indexOf("/to ") == 0){
 					sendmsg(line);
-				}else
+				}
+				if(line.equals("/userlist")) //calling 'send_userlist()'
+					send_userlist();
+				else {
 					broadcast(id + " : " + line);
+				}
+					
 			}
 		}catch(Exception ex){
 			System.out.println(ex);
 		}finally{
 			synchronized(hm){
-				hm.remove(id);
+				;
 			}
 			broadcast(id + " exited.");
 			try{
@@ -92,4 +100,16 @@ class ChatThread extends Thread{
 			}
 		}
 	} // broadcast
+	public void send_userlist() {
+		Collection collection = hm.keys();
+		Iterator iter = collection.iterator();
+		int num = 0;
+		
+		while(iter.hasNext()) {
+			PrintWriter pw = (PrintWriter)iter.next();
+			pw.println(iter.key());
+			pw.flush();
+			num += 1;
+		}
+	} //send_userlist
 }
