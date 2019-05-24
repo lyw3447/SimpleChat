@@ -1,3 +1,5 @@
+//https://github.com/lyw3447/SimpleChat
+
 import java.net.*;
 import java.io.*;
 
@@ -24,17 +26,19 @@ public class ChatClient {
 			InputThread it = new InputThread(sock, br);
 			it.start();
 			String line = null;
-			String[] list = {"aaaaa", "bbbbb", "ccccc", "ddddd", "eeeee"}; //set forbidden words
+			//set forbidden words
+			String[] list = {"aaaaa", "bbbbb", "ccccc", "ddddd", "eeeee"};
 			
 			while((line = keyboard.readLine()) != null){
 				boolean flag = true;
+				//forbidden words가 있는지 체크하기
 				for (String word : list) {
 					if(word != null && line.equals(word)) {
 						System.out.println("Opps... It's forbidden words. Please try again!\n");
 						flag = false;
 						break;
 					}
-				}//check forbidden words
+				}
 				if (flag == true) {
 					pw.println(line);
 					pw.flush();

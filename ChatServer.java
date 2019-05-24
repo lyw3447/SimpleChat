@@ -1,3 +1,5 @@
+//https://github.com/lyw3447/SimpleCha
+
 import java.net.*;
 import java.io.*;
 import java.util.*;
@@ -106,8 +108,10 @@ class ChatThread extends Thread{
 		}
 	} // broadcast
 	
-	//userlist 출력 method
-	public void send_userlist() { //내아이디에 해당되는게 뭔지.. 똑같이 한다(sendmsg와)
+	// userlist 출력 method
+	// 내아이디에 해당되는 pw가 뭔지 찾아서 그곳에만 내용을 보낸다
+	// collection에 key들을 모아 저장한 후 iterator을 이용해 하나씩 보낸다.
+	public void send_userlist() { 
 		Collection collection = hm.keySet();
 		Iterator iter = collection.iterator();
 		int num = 0;
@@ -121,6 +125,7 @@ class ChatThread extends Thread{
 				num += 1;
 			}
 			pw.println("Total number : " + num);
+			pw.flush();
 		}
 	} 
 }
