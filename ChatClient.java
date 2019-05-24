@@ -16,6 +16,7 @@ public class ChatClient {
 			sock = new Socket(args[1], 10001);
 			pw = new PrintWriter(new OutputStreamWriter(sock.getOutputStream()));
 			br = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+			//define bufferedReader
 			BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
 			// send username.
 			pw.println(args[0]);
@@ -23,13 +24,26 @@ public class ChatClient {
 			InputThread it = new InputThread(sock, br);
 			it.start();
 			String line = null;
+			String[] list = {"aaaaa", "bbbbb", "ccccc", "ddddd", "eeeee"}; //set forbidden words
+			
 			while((line = keyboard.readLine()) != null){
-				pw.println(line);
-				pw.flush();
-				if(line.equals("/quit")){
-					endflag = true;
-					break;
+				boolean flag = true;
+				for (String word : list) {
+					if(word != null && line.equals(word)) {
+						System.out.println("Opps... It's forbidden words. Please try again!\n");
+						flag = false;
+						break;
+					}
+				}//check forbidden words
+				if (flag == true) {
+					pw.println(line);
+					pw.flush();
+					if(line.equals("/quit")){
+						endflag = true;
+						break;
+					}		
 				}
+
 			}
 			System.out.println("Connection closed.");
 		}catch(Exception ex){
