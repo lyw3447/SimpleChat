@@ -33,7 +33,7 @@ public class ChatClient {
 				boolean flag = true;
 				//forbidden words가 있는지 체크하기
 				for (String word : list) {
-					if(word != null && line.equals(word)) {
+					if(word != null && line.contains(word)) {
 						System.out.println("Opps... It's forbidden words. Please try again!\n");
 						flag = false;
 						break;
