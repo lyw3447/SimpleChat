@@ -1,5 +1,3 @@
-//https://github.com/lyw3447/SimpleChat
-
 import java.net.*;
 import java.io.*;
 import java.util.*;
@@ -14,9 +12,10 @@ public class ChatServer {
 			while(true){
 				Socket sock = server.accept();
 				ChatThread chatthread = new ChatThread(sock, hm);
+// 뭔가를 물어본다... 예를 들어 클라이언트 아이디를..
 				chatthread.start();
 			} // while
-		}catch(Exception e) {
+		}catch(Exception e){
 			System.out.println(e);
 		}
 	} // main
@@ -46,29 +45,28 @@ class ChatThread extends Thread{
 		}
 	} // construcor
 	public void run(){
-		
 		try{
 			String line = null;
-			
+			String str = null;
 			while((line = br.readLine()) != null){
-				boolean flag = true;
 				if(line.equals("/quit"))
 					break;
-				if(line.indexOf("/to ") == 0){
+				if((str = checkword(line))!= null){
+					warning(str);
+				}
+				else if(line.equals("/userlist")){
+					senduserlist();
+				}
+				else if(line.indexOf("/to ") == 0){
 					sendmsg(line);
-				}
-				if(line.equals("/userlist")) //calling 'send_userlist()'
-					send_userlist();
-				else {
+				}else
 					broadcast(id + " : " + line);
-				}
-					
 			}
 		}catch(Exception ex){
 			System.out.println(ex);
 		}finally{
 			synchronized(hm){
-				;
+				hm.remove(id);
 			}
 			broadcast(id + " exited.");
 			try{
@@ -77,13 +75,53 @@ class ChatThread extends Thread{
 			}catch(Exception ex){}
 		}
 	} // run
+	private void senduserlist(){
+		int j = 1;
+		PrintWriter pw = null;
+		Object obj = null;
+		Iterator<String> iter = null;
+		synchronized(hm){
+			iter = hm.keySet().iterator();
+			obj = hm.get(id);
+		}
+		if(obj != null){
+				pw = (PrintWriter)obj;
+		}
+		pw.println("<User list>");
+		while(iter.hasNext()){
+				String list = (String)iter.next();
+				pw.println(j+". "+list);
+				j++;
+		}
+		j--;
+		pw.println("Total : "+j+".");
+		pw.flush();
+	}
+
+	public String checkword(String msg){
+		int b = 1;
+		String[] word ={"바보","멍청이","병신","놈","새끼"};
+		for(int i=0;i<word.length;i++){
+			if(msg.contains(word[i]))
+				return word[i];
+		}
+		return null;
+	}
+	public void warning(String msg){
+		Object obj = hm.get(id);
+		if(obj != null){
+				PrintWriter pw = (PrintWriter)obj;
+				pw.println("Don't use "+ msg);
+				pw.flush();
+		} // if
+	}
 	public void sendmsg(String msg){
 		int start = msg.indexOf(" ") +1;
 		int end = msg.indexOf(" ", start);
 		if(end != -1){
 			String to = msg.substring(start, end);
 			String msg2 = msg.substring(end+1);
-			Object obj = hm.get(to); //해당하는 pw의 주솟값을 리턴
+			Object obj = hm.get(to);
 			if(obj != null){
 				PrintWriter pw = (PrintWriter)obj;
 				pw.println(id + " whisphered. : " + msg2);
@@ -95,37 +133,13 @@ class ChatThread extends Thread{
 		synchronized(hm){
 			Collection collection = hm.values();
 			Iterator iter = collection.iterator();
-			Object obj = hm.get(id);
 			while(iter.hasNext()){
 				PrintWriter pw = (PrintWriter)iter.next();
-				
-				//최근 날라온 pw를 제외하고 msg를 보낸다 
-				if (pw != (PrintWriter)obj) {
-					pw.println(msg); //모든 pw한테 보낸다
-					pw.flush();
-				}
+				PrintWriter pw2 = (PrintWriter)hm.get(id);
+				if(pw==pw2) continue;
+				pw.println(msg);
+				pw.flush();
 			}
 		}
 	} // broadcast
-	
-	// userlist 출력 method
-	// 내아이디에 해당되는 pw가 뭔지 찾아서 그곳에만 내용을 보낸다
-	// collection에 key들을 모아 저장한 후 iterator을 이용해 하나씩 보낸다.
-	public void send_userlist() { 
-		Collection collection = hm.keySet();
-		Iterator iter = collection.iterator();
-		int num = 0;
-		Object obj = hm.get(id); //내 아이디에 맞는 pw에 넣어주어야 한다.
-		
-		if (obj != null){
-			PrintWriter pw = (PrintWriter)obj;
-			while(iter.hasNext()) {
-				pw.println(iter.next()); 
-				pw.flush();
-				num += 1;
-			}
-			pw.println("Total number : " + num);
-			pw.flush();
-		}
-	} 
 }

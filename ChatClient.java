@@ -1,5 +1,3 @@
-//https://github.com/lyw3447/SimpleChat
-
 import java.net.*;
 import java.io.*;
 
@@ -18,36 +16,20 @@ public class ChatClient {
 			sock = new Socket(args[1], 10001);
 			pw = new PrintWriter(new OutputStreamWriter(sock.getOutputStream()));
 			br = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-			//define bufferedReader
 			BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
-			// send username
+			// send username.
 			pw.println(args[0]);
 			pw.flush();
 			InputThread it = new InputThread(sock, br);
 			it.start();
 			String line = null;
-			//set forbidden words
-			String[] list = {"aaaaa", "bbbbb", "ccccc", "ddddd", "eeeee"};
-			
 			while((line = keyboard.readLine()) != null){
-				boolean flag = true;
-				//forbidden words가 있는지 체크하기
-				for (String word : list) {
-					if(word != null && line.contains(word)) {
-						System.out.println("Opps... It's forbidden words. Please try again!\n");
-						flag = false;
-						break;
-					}
+				pw.println(line);
+				pw.flush();
+				if(line.equals("/quit")){
+					endflag = true;
+					break;
 				}
-				if (flag == true) {
-					pw.println(line);
-					pw.flush();
-					if(line.equals("/quit")){
-						endflag = true;
-						break;
-					}		
-				}
-
 			}
 			System.out.println("Connection closed.");
 		}catch(Exception ex){
