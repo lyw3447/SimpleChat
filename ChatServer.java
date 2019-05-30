@@ -113,9 +113,8 @@ class ChatThread extends Thread{
 	}//check word()
 	
 	public void warning(String msg){
-		synchronized(hm) {
-			Object obj = hm.get(id); //id list가 저장되어 있는 hash map에서 id에 해당하는 object를 찾아 저장 
-		}
+		Object obj = hm.get(id); //id list가 저장되어 있는 hash map에서 id에 해당하는 object를 찾아 저장 
+
 		if(obj != null){
 				PrintWriter pw = (PrintWriter)obj;
 				pw.println("Don't use "+ msg);
@@ -129,9 +128,8 @@ class ChatThread extends Thread{
 		if(end != -1){
 			String to = msg.substring(start, end); //상대방 
 			String msg2 = msg.substring(end+1); //내용 
-			synchronized(hm) {
-				Object obj = hm.get(to);
-			}
+			Object obj = hm.get(to);
+
 			if(obj != null){
 				PrintWriter pw = (PrintWriter)obj;
 				pw.println(id + " whisphered. : " + msg2);
