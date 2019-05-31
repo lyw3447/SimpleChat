@@ -73,7 +73,7 @@ class ChatThread extends Thread{
 					sendmsg(line);
 				}
 				else if (line.equals("/spamlist")) {
-					spamlist(line);
+					spamlist();
 				}
 				else if(line.indexOf("/addspam") == 0) {
 					addspam(line);
@@ -131,39 +131,33 @@ class ChatThread extends Thread{
 	}//check word()
 
 	public void addspam(String msg) {
-		int start = msg.indexOf(" ") +1;
-		int end = msg.indexOf(" ", start);
+		int start = msg.indexOf(" ")+1;
 		String str = null;
-		String word = msg.substring(end+1);	//금지어 
+		String word = msg.substring(start); //금지어 
 		synchronized (hm)
 		{
 			PrintWriter pw = (PrintWriter)hm.get(id);
 			if ((str = checkword(msg))!= null) {	// 금지어가 이미 존재하면 
 				pw.println(CurrTime()+word+" 이미 존재합니다!");
 				pw.flush();
+				return;
 			}
-			synchronized(spam)					// 다른 스레드 접근을 막기 
-			{	
-				spam.add(word);
-			}
+			spam.add(word);
 			pw.println(CurrTime()+word+" 저장 완료!");
 			pw.flush();
 		}
 	}
 	
-	public void spamlist(String msg) {
+	public void spamlist() {
 
 		synchronized(hm) {
 			PrintWriter pw = (PrintWriter)hm.get(id);
 			String tempDate = CurrTime();
 			pw.println(tempDate+"<Spam List>");
 			pw.flush();
-			synchronized(spam)
-			{
-				for (String word : spam){
-					pw.println(CurrTime()+word);
-					pw.flush();
-				}
+			for (String word : spam){
+				pw.println(CurrTime()+word);
+				pw.flush();
 			}
 		}
 	}
