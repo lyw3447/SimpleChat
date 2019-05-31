@@ -1,5 +1,8 @@
+//https://github.com/lyw3447/SimpleChat/blob/master/ChatServer.java
+
 import java.net.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
 
 public class ChatClient {
 
@@ -32,6 +35,7 @@ public class ChatClient {
 				}
 			}
 			System.out.println("Connection closed.");
+			
 		}catch(Exception ex){
 			if(!endflag)
 				System.out.println(ex);
@@ -79,4 +83,5 @@ class InputThread extends Thread{
 			}catch(Exception ex){}
 		}
 	} // InputThread
+	
 }
