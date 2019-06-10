@@ -1,5 +1,3 @@
-//https://github.com/lyw3447/SimpleChat/blob/master/ChatServer.java
-
 import java.net.*;
 import java.io.*;
 import java.util.*;
